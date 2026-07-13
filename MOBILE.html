@@ -56,17 +56,17 @@
   .topbar .subtitle span.o{ color: var(--orange); }
   .topbar .subtitle span.t{ color: var(--teal); }
 
-  /* Tabs con scrolling orizzontale nativo su mobile */
+  /* Tabs */
   .tabs-container {
     margin-left: -12px;
     margin-right: -12px;
     overflow-x: auto;
     display: flex;
     border-bottom: 1px solid var(--line);
-    scrollbar-width: none; /* Nasconde barra su Firefox */
+    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
-  .tabs-container::-webkit-scrollbar { display: none; } /* Nasconde barra su Safari/Chrome */
+  .tabs-container::-webkit-scrollbar { display: none; }
 
   .tabs{
     display:flex;
@@ -125,7 +125,7 @@
   .dot.teal{ background: var(--teal); }
   .dot.yellow{ background: var(--yellow); }
 
-  /* Forms mobile-friendly (16px previene lo zoom automatico di iOS Safari) */
+  /* Forms */
   .form-grid{
     display:grid;
     grid-template-columns: 1fr;
@@ -152,7 +152,7 @@
     color: var(--chalk);
     padding: 10px 12px;
     font-family: 'Inter', sans-serif;
-    font-size: 16px; /* Obbligatorio su iPhone per bloccare lo zoom automatico dei campi input */
+    font-size: 16px;
   }
   input:focus, select:focus, textarea:focus{
     outline: none;
@@ -160,6 +160,28 @@
   }
   textarea{ resize: vertical; min-height: 60px; }
   .mono-input{ font-family:'Space Mono', monospace; }
+
+  /* Checkbox Custom Style */
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .checkbox-container input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--yellow);
+  }
+  .checkbox-label {
+    font-size: 12px;
+    color: var(--chalk);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
   button.primary{
     font-family:'Oswald', sans-serif;
@@ -172,7 +194,7 @@
     cursor:pointer;
     color: #12140F;
     font-weight: 600;
-    width: 100%; /* Sui telefoni i bottoni principali prendono tutta la larghezza */
+    width: 100%;
     display: block;
     text-align: center;
     transition: filter .15s ease;
@@ -200,7 +222,6 @@
     button.ghost { width: auto; }
   }
 
-  /* Target di tocco esteso su mobile (Min 44px di altezza virtuale per l'eliminazione) */
   button.icon-btn{
     background:none;
     border:none;
@@ -215,7 +236,7 @@
   }
   button.icon-btn.edit-btn { color: var(--yellow); }
 
-  /* Wod Block (Multi-Wod) */
+  /* Wod Block */
   .wod-block {
     background: rgba(0,0,0,0.2);
     border: 1px solid var(--line);
@@ -240,7 +261,6 @@
     cursor: pointer;
   }
 
-  /* Righe esercizio ottimizzate mobile */
   .exercise-row{
     display:grid;
     grid-template-columns: 1fr 1fr auto;
@@ -269,7 +289,6 @@
     color: var(--chalk-dim);
   }
   
-  /* Griglia statistiche corse nello storico */
   .entry-stats{
     display:grid;
     grid-template-columns: repeat(2, 1fr);
@@ -367,7 +386,7 @@
   }
   .chart-wrap{ overflow-x:auto; margin-top: 10px; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 8px; }
 
-  /* Tabella Massimali Responsive (Scrollabile orizzontalmente su mobile) */
+  /* Tabella Massimali Responsive */
   .table-responsive-container {
     width: 100%;
     overflow-x: auto;
@@ -379,7 +398,7 @@
   .pr-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px; /* Forza la tabella a restare leggibile senza schiacciarsi */
+    min-width: 600px;
   }
   .pr-table th, .pr-table td {
     padding: 12px 10px;
@@ -534,6 +553,8 @@
               <select id="pbContextType">
                 <option value="Forza Classica">Forza Classica (Set/Reps)</option>
                 <option value="EMOM">EMOM</option>
+                <option value="E2MOM">E2MOM</option>
+                <option value="E3MOM">E3MOM</option>
                 <option value="Metcon / AMRAP">All'interno di un Metcon</option>
                 <option value="Complex Pesante">Complex Pesante</option>
               </select>
@@ -541,18 +562,24 @@
           </div>
 
           <div id="emomTypeSection" style="display: none; margin-bottom: 12px;">
-            <label for="pbEmomSubtype">Tipo di EMOM specifico</label>
-            <input type="text" id="pbEmomSubtype" placeholder="es. E1MOM, E2MOM">
+            <label for="pbEmomSubtype">Tipo di EMOM specifico (Se diverso)</label>
+            <input type="text" id="pbEmomSubtype" placeholder="es. E1MOM, E4MOM">
           </div>
 
           <div class="form-grid">
             <div>
               <label for="pbRounds">Round / Set Totali</label>
-              <input type="number" id="pbRounds" min="1" value="5">
+              <input type="text" id="pbRounds" placeholder="es. 5 rds o 5 set" value="5">
             </div>
             <div>
-              <label for="pbReps">Ripetizioni (per round)</label>
+              <label id="repsLabel" for="pbReps">Ripetizioni (per round)</label>
               <input type="number" id="pbReps" min="1" value="3" required>
+              <input type="text" id="pbRepsVariable" placeholder="es. 5-4-3-2-1" style="display: none;">
+              
+              <label class="checkbox-container">
+                <input type="checkbox" id="pbIsVariableReps">
+                <span class="checkbox-label">Rep a scalare / variabili</span>
+              </label>
             </div>
             <div>
               <label for="pbIsConstant">Andamento Carico</label>
@@ -569,7 +596,7 @@
               <input type="number" id="pbWeight" step="0.5" min="0" placeholder="85" required>
             </div>
             <div style="background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 8px; text-align: center;">
-              <span style="font-size: 11px; color: var(--chalk-dim); text-transform: uppercase; display: block;">Stima Teorica 1-RM</span>
+              <span id="previewLabel" style="font-size: 11px; color: var(--chalk-dim); text-transform: uppercase; display: block;">Stima Teorica 1-RM</span>
               <div id="pbPreviewOneRM" style="font-family: 'Space Mono', monospace; color: var(--yellow); font-size: 18px; font-weight: bold; margin-top: 2px;">-- kg</div>
             </div>
           </div>
@@ -598,7 +625,6 @@
 
 <script>
     (function(){
-      // --- CONFIGURAZIONE SUPABASE ---
       const SUPABASE_URL = "https://jyejxdxwrlifdgdoxnkx.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5ZWp4ZHh3cmxpZmRnZG94bmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MzMwNjEsImV4cCI6MjA5OTUwOTA2MX0.OfR-joJS_eq0nJnarlR22yapu0foPRRTSp2mrnyzcl8";
       
@@ -761,7 +787,6 @@
           </div>
         `;
         
-        // Assegnazione del valore della descrizione differita per prevenire problemi di rendering
         div.querySelector('.wod-desc-textarea').value = initialDesc;
 
         const exRows = div.querySelector('.ex-rows-container');
@@ -920,7 +945,8 @@
 
       function syncFormFieldsVisibility() {
         const emomSection = $('#emomTypeSection');
-        if($('#pbContextType').value === 'EMOM') {
+        const contextValue = $('#pbContextType').value;
+        if(contextValue === 'EMOM') {
           emomSection.style.display = 'block';
         } else {
           emomSection.style.display = 'none';
@@ -935,22 +961,51 @@
           variableSection.style.display = 'none';
           weightLabel.textContent = "Peso Unico (kg)";
         }
+
+        const isVariableReps = $('#pbIsVariableReps').checked;
+        const pbReps = $('#pbReps');
+        const pbRepsVariable = $('#pbRepsVariable');
+        const repsLabel = $('#repsLabel');
+        const previewLabel = $('#previewLabel');
+
+        if(isVariableReps) {
+          pbReps.style.display = 'none';
+          pbReps.removeAttribute('required');
+          pbRepsVariable.style.display = 'block';
+          pbRepsVariable.setAttribute('required', 'required');
+          repsLabel.textContent = "Schema Reps (testo)";
+          previewLabel.textContent = "Nota su Carico Massimo";
+        } else {
+          pbReps.style.display = 'block';
+          pbReps.setAttribute('required', 'required');
+          pbRepsVariable.style.display = 'none';
+          pbRepsVariable.removeAttribute('required');
+          repsLabel.textContent = "Ripetizioni (per round)";
+          previewLabel.textContent = "Stima Teorica 1-RM";
+        }
       }
 
       if($('#pbContextType')) $('#pbContextType').addEventListener('change', syncFormFieldsVisibility);
       if($('#pbIsConstant')) $('#pbIsConstant').addEventListener('change', syncFormFieldsVisibility);
+      if($('#pbIsVariableReps')) $('#pbIsVariableReps').addEventListener('change', syncFormFieldsVisibility);
 
       function updateManualPbPreview() {
+        const isVariableReps = $('#pbIsVariableReps').checked;
         const weight = parseFloat($('#pbWeight').value) || 0;
-        const reps = parseInt($('#pbReps').value) || 1;
         const preview = $('#pbPreviewOneRM');
-        if(preview) {
+        if(!preview) return;
+
+        if(isVariableReps) {
+          preview.textContent = weight > 0 ? `${weight.toFixed(1)} kg` : '-- kg';
+        } else {
+          const reps = parseInt($('#pbReps').value) || 1;
           const estimated = calculateOneRM(weight, reps);
           preview.textContent = estimated > 0 ? `${estimated.toFixed(1)} kg` : '-- kg';
         }
       }
       if($('#pbWeight')) $('#pbWeight').addEventListener('input', updateManualPbPreview);
       if($('#pbReps')) $('#pbReps').addEventListener('input', updateManualPbPreview);
+      if($('#pbIsVariableReps')) $('#pbIsVariableReps').addEventListener('change', updateManualPbPreview);
 
       function resetPbForm() {
         pbManualForm.reset();
@@ -976,17 +1031,18 @@
 
           const editingId = $('#pbEditingId').value;
           const isEditMode = editingId !== '';
+          const isVariableReps = $('#pbIsVariableReps').checked;
 
           const entry = {
             id: isEditMode ? editingId : uid(), 
             date: $('#pbDate').value, 
             name: $('#pbName').value.trim(),
             weight: parseFloat($('#pbWeight').value), 
-            reps: parseInt($('#pbReps').value),
+            reps: isVariableReps ? 0 : parseInt($('#pbReps').value),
             context_type: structureType,
-            context_details: `Rounds/Sets: ${$('#pbRounds').value || 1}`,
+            context_details: `Struttura: ${$('#pbRounds').value || '1'}`,
             is_constant: $('#pbIsConstant').value === 'yes',
-            weight_details: $('#pbIsConstant').value === 'no' ? $('#pbWeightDetails').value.trim() : 'Carico Costante'
+            weight_details: isVariableReps ? $('#pbRepsVariable').value.trim() : ($('#pbIsConstant').value === 'no' ? $('#pbWeightDetails').value.trim() : 'Carico Costante')
           };
 
           if(supabase) { 
@@ -1001,7 +1057,7 @@
               }
               if(error) throw error;
             } catch(err){ 
-              alert("Errore:\n" + err.message);
+              alert("Errore Supabase:\n" + err.message);
             } 
           }
           
@@ -1036,15 +1092,18 @@
             </thead>
             <tbody>
               ${sortedPrs.map(item => {
-                const est1RM = calculateOneRM(item.weight, item.reps);
+                const isVar = item.reps === 0;
+                const est1RM = isVar ? item.weight : calculateOneRM(item.weight, item.reps);
+                const displayReps = isVar ? `<span style="font-size:11px; color:var(--yellow); font-weight:500;">(${item.weight_details})</span>` : `@ ${item.reps} rep`;
+                
                 return `
                   <tr>
                     <td><strong>${item.name}</strong></td>
                     <td class="weight-cell">
-                      ${item.weight} kg <span style="font-size:11px; color:var(--chalk-dim)">@ ${item.reps} rep</span>
-                      ${!item.is_constant ? `<span class="info-context" style="color:var(--yellow); font-style:italic;">${item.weight_details || ''}</span>` : ''}
+                      ${item.weight} kg ${displayReps}
+                      ${(!item.is_constant && !isVar) ? `<span class="info-context" style="color:var(--yellow); font-style:italic;">${item.weight_details || ''}</span>` : ''}
                     </td>
-                    <td class="rm-cell">${est1RM.toFixed(1)} kg</td>
+                    <td class="rm-cell">${isVar ? 'Complex / Var' : est1RM.toFixed(1) + ' kg'}</td>
                     <td class="date-cell">
                       <span style="color:var(--yellow); font-weight:500;">${item.context_type}</span>
                       <span class="info-context">${item.context_details || ''}</span>
@@ -1070,21 +1129,29 @@
             $('#pbDate').value = item.date;
             $('#pbName').value = item.name;
             $('#pbWeight').value = item.weight;
-            $('#pbReps').value = item.reps;
             
-            const matchRounds = (item.context_details || '').match(/Rounds\/Sets:\s*(\d+)/);
+            const matchRounds = (item.context_details || '').match(/Struttura:\s*(.*)/);
             $('#pbRounds').value = matchRounds ? matchRounds[1] : '5';
 
             $('#pbIsConstant').value = item.is_constant ? 'yes' : 'no';
-            $('#pbWeightDetails').value = !item.is_constant ? item.weight_details : '';
 
-            const standardTypes = ["Forza Classica", "Metcon / AMRAP", "Complex Pesante"];
+            if(item.reps === 0) {
+              $('#pbIsVariableReps').checked = true;
+              $('#pbRepsVariable').value = item.weight_details;
+              $('#pbWeightDetails').value = '';
+            } else {
+              $('#pbIsVariableReps').checked = false;
+              $('#pbReps').value = item.reps;
+              $('#pbWeightDetails').value = !item.is_constant ? item.weight_details : '';
+            }
+
+            const standardTypes = ["Forza Classica", "EMOM", "E2MOM", "E3MOM", "Metcon / AMRAP", "Complex Pesante"];
             if (standardTypes.includes(item.context_type)) {
               $('#pbContextType').value = item.context_type;
               $('#pbEmomSubtype').value = '';
             } else {
               $('#pbContextType').value = 'EMOM';
-              $('#pbEmomSubtype').value = item.context_type === 'EMOM' ? '' : item.context_type;
+              $('#pbEmomSubtype').value = item.context_type;
             }
 
             $('#pbFormTitle').innerHTML = '<span class="dot yellow"></span>Modifica Record';
